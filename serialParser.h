@@ -6,6 +6,18 @@
 #define XACCL_PACK  2
 #define YACCL_PACK  3
 #define NUMBER_VALUE    3
+
+#define START_STREAM_FB    0
+#define START_STREAM_SB    1
+
+#define NUMBER_FByte_ROT    2
+#define NUMBER_SByte_ROT    3
+#define NUMBER_FByte_XACCL    5
+#define NUMBER_SByte_XACCL    6
+#define NUMBER_FByte_YACCL    7
+#define NUMBER_SByte_YACCL    8
+
+
 #include <QMainWindow>
 #include <QSerialPortInfo>
 #include <QSerialPort>
@@ -31,11 +43,16 @@ private:
 
     float filtred_value(float ROW, int pack);
     float inclineScale(int16_t sensorData);
+    float accelScale(int16_t sensorData);
 
     QByteArray data;
     quint8 mas[SIZE_OF_PACK];
     uint16_t ROT;
+    uint16_t XrowACCL;
+    uint16_t YrowACCL;
     float ROTS;
+    float XACCL;
+    float YACCL;
     // for filter
 
     float varProcess[NUMBER_VALUE] = {0.05, 0.05, 0.05};

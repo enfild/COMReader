@@ -58,23 +58,44 @@ void MainWindow::testSerialPort()
         {
             mas[i] = (quint8)data.at(i);
         }
-        if ((mas[0] != 204) & (mas[1] != 204))
+        if ((mas[START_STREAM_FB] != 204) & (mas[START_STREAM_SB] != 204))
         {
             continue;
             data.remove(0, 1);
         }
         qDebug() << "if true(composition of arr)";
 
-        ROT = uint16_t(mas[2] << 8) + mas[3];
+        ROT = uint16_t(mas[NUMBER_FByte_ROT] << 8) + mas[NUMBER_SByte_ROT];
 
-        qDebug() << ROT;
-        ROTS =inclineScale(ROT);
+        XrowACCL = uint16_t(mas[NUMBER_FByte_XACCL] << 8) + mas[NUMBER_SByte_XACCL];
+
+        YrowACCL = uint16_t(mas[NUMBER_FByte_YACCL] << 8) + mas[NUMBER_SByte_YACCL];
+
+//        qDebug() << ROT;
+        ROTS = inclineScale(ROT);
+        XACCL = accelScale(XrowACCL);
+        YACCL = accelScale(YrowACCL);
+
         qDebug() << ROTS << "from func";
 //        qDebug() << fres << "from Sanya";
 
+        ROTS = filtred_value(ROTS, 0);
+        XACCL = filtred_value(XACCL, 1);
+        YACCL = filtred_value(YACCL, 2);
+
         ui->tableWidget->setRowCount(ui->tableWidget->rowCount() + 1);
         for (int i =0; i<SIZE_OF_PACK; i++){
-            Item->setText(i, QString::number(ROTS));
+            for (int j = 0; j < NUMBER_VALUE; j++){
+                if (j == 0){
+            Item->setText(j, QString::number(ROTS));
+                }
+                if (j == 1){
+                    Item->setText(j, QString::number(XACCL));
+                }
+                else {
+                    Item->setText(j, QString::number(YACCL));
+                }
+            }
             //            QTableWidgetItem asd("asd"); string for testg
             if(ui->tableWidget->item(ui->tableWidget->rowCount() - 1, i) == nullptr)
             {
@@ -94,8 +115,6 @@ void MainWindow::on_pushButton_clicked()
     Qtport.setPortName(ui->comboBox->currentText());
     //Qtport.close();
     qDebug() << "open port";
-    // Qtport.open(QIODevice::ReadWrite);
-    // qDebug() << Qtport.open(QIODevice::ReadWrite);
     qDebug() << "open port 2";
     bool ok = Qtport.open(QIODevice::ReadWrite);
     qDebug() << ok << "status";
@@ -112,15 +131,15 @@ void MainWindow::on_comboBox_currentIndexChanged(const QString &arg1)
     ui->textEdit_infoComPort->append(info.description());
 }
 
-float MainWindow::filtred_value(float ROW, int number){
-    Pc[number] = P[number] + varProcess[number];
-    G[number] = Pc[number]/(Pc[number] + varVolt[number]);
-    P[number] = (1-G[number])*Pc[number];
-    Xp[number] = Xe[number];
-    Zp[number] = Xp[number];
-    Xe[number] = G[number]*(ROW-Zp[number])+Xp[number]; // "фильтрованное" значение
-    return(Xe[number]);
-}
+//float MainWindow::filtred_value(float ROW, int number){
+//    Pc[number] = P[number] + varProcess[number];
+//    G[number] = Pc[number]/(Pc[number] + varVolt[number]);
+//    P[number] = (1-G[number])*Pc[number];
+//    Xp[number] = Xe[number];
+//    Zp[number] = Xp[number];
+//    Xe[number] = G[number]*(ROW-Zp[number])+Xp[number]; // "фильтрованное" значение
+//    return(Xe[number]);
+//}
 
 float MainWindow::inclineScale(int16_t sensorData)
 {
@@ -134,7 +153,7 @@ float MainWindow::inclineScale(int16_t sensorData)
     float finalData = signedData * 0.025;
     return finalData;
 }
-
+// X = 0; Y = 1
 float MainWindow::accelScale(int16_t sensorData)
 {
     int signedData = 0;
