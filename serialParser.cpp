@@ -54,62 +54,27 @@ void MainWindow::testSerialPort()
     }
     for(;data.size() >= SIZE_OF_PACK;)
     {
-
         for(int i = 0; i < SIZE_OF_PACK; i++)
         {
             mas[i] = (quint8)data.at(i);
-//            qDebug() << mas[i];
         }
         if ((mas[0] != 204) & (mas[1] != 204))
         {
             continue;
             data.remove(0, 1);
         }
-
         qDebug() << "if true(composition of arr)";
 
         ROT = uint16_t(mas[2] << 8) + mas[3];
+
         qDebug() << ROT;
-        //        ROT = ROT << 2;
-        //                ROT = ROT > 0x2000 ? ROT - 0x4000 : ROT;
-        //        ROT = ROT
-        //                ROT = ROT &(1 << 13) ? ROT - (1 << 14) : ROT;
-
         ROTS =inclineScale(ROT);
-
-        //worked form
-        int16_t result = ROT & (1<<13) ? short(ROT) - (1<<14) : short(ROT);
-        result = result * 0.0245;
-        auto fres = filtred_value(result, ROT_PACK);
-
-
-//        uint16_t result = ROT & (1 << 13) ? (short)ROT - (1 << 14) : short(ROT);
-
-//        short rotation = ROT&(1 << 13) ? ROT - (1 << 14) : ROT;
-
-//        float rotation_obr = rotation/40;
-//        float rotation_fil = filtred_value(rotation_obr, ROT_PACK);
-
-//        qDebug() << b;
-
-        //        ROT &= ~(0b11 << 14);
-        //        ROT = ROT << 2;
-        //        ROT >>= 2;
-        //        ROT = ROT/40;
-        //        ROT = filtredROT(ROT);
-
         qDebug() << ROTS << "from func";
-        qDebug() << fres << "from Sanya";
-
-        //                     }
-        //                 }
-
+//        qDebug() << fres << "from Sanya";
 
         ui->tableWidget->setRowCount(ui->tableWidget->rowCount() + 1);
-
         for (int i =0; i<SIZE_OF_PACK; i++){
             Item->setText(i, QString::number(ROTS));
-
             //            QTableWidgetItem asd("asd"); string for testg
             if(ui->tableWidget->item(ui->tableWidget->rowCount() - 1, i) == nullptr)
             {
@@ -123,7 +88,6 @@ void MainWindow::testSerialPort()
         data.remove(0, SIZE_OF_PACK);
     }
 }
-
 
 void MainWindow::on_pushButton_clicked()
 {
@@ -168,5 +132,18 @@ float MainWindow::inclineScale(int16_t sensorData)
     else
         signedData = sensorData;
     float finalData = signedData * 0.025;
+    return finalData;
+}
+
+float MainWindow::accelScale(int16_t sensorData)
+{
+    int signedData = 0;
+    sensorData = sensorData & 0x3FFF; // Discard upper two bits
+    int isNeg = sensorData & 0x2000;
+    if (isNeg == 0x2000) // If the number is negative, scale and sign the output
+        signedData = sensorData - 0x3FFF;
+    else
+        signedData = sensorData;
+    float finalData = signedData * 0.24414; // Multiply by accel sensitivity (244.14 uG/LSB)
     return finalData;
 }
