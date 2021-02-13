@@ -17,13 +17,10 @@
 #define NUMBER_FByte_YACCL    7
 #define NUMBER_SByte_YACCL    8
 
-
 #include <QMainWindow>
 #include <QSerialPortInfo>
 #include <QSerialPort>
 #include <QTreeWidgetItem>
-
-
 
 namespace Ui {
 class MainWindow;
@@ -56,19 +53,19 @@ private:
     // for filter
 
     float varProcess[NUMBER_VALUE] = {0.05, 0.05, 0.05};
-float varVolt[NUMBER_VALUE] = {11.2, 11.2, 11.2};
+    float varVolt[NUMBER_VALUE] = {11.2, 11.2, 11.2};
 
-float Pc[NUMBER_VALUE] = {0};
-float G[NUMBER_VALUE] = {0};
-float P[NUMBER_VALUE] = {1.0, 1.0, 1.0};
-float Xp[NUMBER_VALUE] = {0};
-float Zp[NUMBER_VALUE] = {0};
-float Xe[NUMBER_VALUE] = {0};
+    float Pc[NUMBER_VALUE] = {0};
+    float G[NUMBER_VALUE] = {0};
+    float P[NUMBER_VALUE] = {1.0, 1.0, 1.0};
+    float Xp[NUMBER_VALUE] = {0};
+    float Zp[NUMBER_VALUE] = {0};
+    float Xe[NUMBER_VALUE] = {0};
 
 private slots:
-void testSerialPort();
-void on_pushButton_clicked();
-void on_comboBox_currentIndexChanged(const QString &arg1);
+    void testSerialPort();
+    void on_pushButton_clicked();
+    void on_comboBox_currentIndexChanged(const QString &arg1);
 };
 
 #endif // MAINWINDOW_H
